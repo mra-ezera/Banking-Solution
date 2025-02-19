@@ -44,6 +44,9 @@ namespace Banking.Controllers
             if (!result.IsSuccess)
                 return BadRequest(result.Error);
 
+            if (result.Data == null)
+                return BadRequest("Account creation failed.");
+
             return CreatedAtAction(nameof(GetById), new { id = result.Data.Id }, result.Data);
         }
     }
