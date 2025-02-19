@@ -1,4 +1,6 @@
 using Banking.Data;
+using Banking.Interfaces;
+using Banking.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -15,6 +17,11 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
     new MySqlServerVersion(new Version(8, 0, 23))));
+
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<ITransferService, TransferService>();
+builder.Services.AddScoped<ITransactionHistoryService, TransactionHistoryService>();
 
 var app = builder.Build();
 

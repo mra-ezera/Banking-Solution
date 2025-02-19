@@ -1,10 +1,8 @@
-﻿using Banking.Data;
-using Banking.Models;
-using Banking.Models.Entities;
+﻿using Banking.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Swashbuckle.AspNetCore.Annotations;
+using Banking.Interfaces;
+using Banking.Models;
 
 namespace Banking.Controllers
 {
@@ -12,72 +10,41 @@ namespace Banking.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly ApplicationDbContext dbContext;
+        private readonly IAccountService _accountService;
 
-        public AccountController(ApplicationDbContext dbContext)
+        public AccountController(IAccountService accountService)
         {
-            this.dbContext = dbContext;
+            _accountService = accountService;
         }
 
         [HttpGet]
-        [SwaggerOperation(Summary = "Gets all accounts.")]
-        public IActionResult GetAccounts()
+        [SwaggerOperation(Summary = "Gets an account by ID.")]
+        public async Task<IActionResult> GetAll()
         {
-            var allAccounts = dbContext.Accounts.ToList();
-
-            var options = new JsonSerializerOptions
-            {
-                ReferenceHandler = ReferenceHandler.Preserve,
-                WriteIndented = true
-            };
-
-            return new JsonResult(allAccounts, options);
+            var accounts = await _accountService.GetAllAccountsAsync();
+            return Ok(accounts);
         }
 
         [HttpGet("{id:guid}")]
         [SwaggerOperation(Summary = "Gets an account by ID.")]
-        public IActionResult GetAccountById(Guid id)
+        public async Task<IActionResult> GetById(Guid id)
         {
-            var account = dbContext.Accounts.Find(id);
-
+            var account = await _accountService.GetAccountByIdAsync(id);
             if (account == null)
-            {
                 return NotFound();
-            }
-
-            var options = new JsonSerializerOptions
-            {
-                ReferenceHandler = ReferenceHandler.Preserve,
-                WriteIndented = true
-            };
-
-            return new JsonResult(account, options);
+            return Ok(account);
         }
 
         [HttpPost]
-        [SwaggerOperation(Summary = "Adds a new account.")]
-        public IActionResult AddAccount(AddAccountDto addAccountDto)
+        [SwaggerOperation(Summary = "Creates a new account.")]
+        public async Task<IActionResult> Create([FromBody] AddAccountDto addAccountDto)
         {
-            var accountEntity = new Account()
-            {
-                Name = addAccountDto.Name,
-                Surname = addAccountDto.Surname,
-                Email = addAccountDto.Email,
-                Balance = addAccountDto.Balance,
-                DateCreated = DateTime.Now,
-                DateModified = DateTime.Now
-            };
+            var result = await _accountService.CreateAccountAsync(addAccountDto);
 
-            dbContext.Accounts.Add(accountEntity);
-            dbContext.SaveChanges();
+            if (!result.IsSuccess)
+                return BadRequest(result.Error);
 
-            var options = new JsonSerializerOptions
-            {
-                ReferenceHandler = ReferenceHandler.Preserve,
-                WriteIndented = true
-            };
-
-            return new JsonResult(accountEntity, options);
+            return CreatedAtAction(nameof(GetById), new { id = result.Data.Id }, result.Data);
         }
     }
 }

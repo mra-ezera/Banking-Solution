@@ -1,10 +1,7 @@
-﻿using Banking.Data;
-using Banking.Models;
-using Banking.Models.Entities;
+﻿using Banking.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Swashbuckle.AspNetCore.Annotations;
+using Banking.Interfaces;
 
 namespace Banking.Controllers
 {
@@ -12,84 +9,33 @@ namespace Banking.Controllers
     [ApiController]
     public class TransactionsController : ControllerBase
     {
-        private readonly ApplicationDbContext dbContext;
+        private readonly ITransactionService _transactionService;
 
-        public TransactionsController(ApplicationDbContext dbContext)
+        public TransactionsController(ITransactionService transactionService)
         {
-            this.dbContext = dbContext;
+            _transactionService = transactionService;
         }
 
         [HttpPost("{id:guid}/add")]
         [SwaggerOperation(Summary = "Adds an amount to the account balance.")]
-        public IActionResult AddToBalance(Guid id, [FromBody] UpdateBalanceDto updateBalanceDto)
+        public async Task<IActionResult> AddToBalance(Guid id, [FromBody] UpdateBalanceDto updateBalanceDto)
         {
-            var account = dbContext.Accounts.Find(id);
-            if (account == null)
-            {
-                return NotFound();
-            }
+            var result = await _transactionService.AddBalanceAsync(id, updateBalanceDto);
+            if (!result.IsSuccess)
+                return BadRequest(result.Error);
 
-            account.Balance += updateBalanceDto.Amount;
-            account.DateModified = DateTime.Now;
-
-            var accountHistory = new AccountHistory
-            {
-                AccountId = account.Id,
-                TransactionDate = DateTime.Now,
-                Amount = updateBalanceDto.Amount,
-                Description = updateBalanceDto.Description,
-                Account = account
-            };
-
-            dbContext.AccountHistories.Add(accountHistory);
-            dbContext.SaveChanges();
-
-            var options = new JsonSerializerOptions
-            {
-                ReferenceHandler = ReferenceHandler.Preserve,
-                WriteIndented = true
-            };
-
-            return new JsonResult(account, options);
+            return Ok(result.Data);
         }
 
         [HttpPost("{id:guid}/remove")]
         [SwaggerOperation(Summary = "Removes an amount from the account balance.")]
-        public IActionResult RemoveFromBalance(Guid id, [FromBody] UpdateBalanceDto updateBalanceDto)
+        public async Task<IActionResult> RemoveFromBalance(Guid id, [FromBody] UpdateBalanceDto updateBalanceDto)
         {
-            var account = dbContext.Accounts.Find(id);
-            if (account == null)
-            {
-                return NotFound();
-            }
+            var result = await _transactionService.RemoveBalanceAsync(id, updateBalanceDto);
+            if (!result.IsSuccess)
+                return BadRequest(result.Error);
 
-            if (account.Balance < updateBalanceDto.Amount)
-            {
-                return BadRequest("Insufficient funds.");
-            }
-
-            account.Balance -= updateBalanceDto.Amount;
-            account.DateModified = DateTime.Now;
-
-            var accountHistory = new AccountHistory
-            {
-                AccountId = account.Id,
-                TransactionDate = DateTime.Now,
-                Amount = -updateBalanceDto.Amount,
-                Description = updateBalanceDto.Description,
-                Account = account
-            };
-
-            dbContext.AccountHistories.Add(accountHistory);
-            dbContext.SaveChanges();
-
-            var options = new JsonSerializerOptions
-            {
-                ReferenceHandler = ReferenceHandler.Preserve,
-                WriteIndented = true
-            };
-
-            return new JsonResult(account, options);
+            return Ok(result.Data);
         }
     }
 }
