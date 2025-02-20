@@ -1,4 +1,4 @@
-namespace Banking.Models
+namespace Banking.Models.DTOs
 {
     public class UpdateBalanceDto
     {

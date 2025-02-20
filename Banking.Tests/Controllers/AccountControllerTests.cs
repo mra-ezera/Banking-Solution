@@ -1,15 +1,49 @@
 ﻿using Banking.Controllers;
 using Banking.Interfaces;
-using Banking.Models;
+using Banking.Models.DTOs;
 using Banking.Models.Entities;
+using Banking.Models.Results;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Xunit;
 
 namespace Banking.Tests.Controllers
 {
     public class AccountControllerTests
     {
+        [Fact]
+        public async Task GetAll_ReturnsOkResult_WithListOfAccounts()
+        {
+            var mockService = new Mock<IAccountService>();
+            var accounts = new List<Account>
+            {
+                new Account { Id = Guid.NewGuid(), Name = "John", Surname = "Doe", Email = "john.doe@example.com" },
+                new Account { Id = Guid.NewGuid(), Name = "Jane", Surname = "Doe", Email = "jane.doe@example.com" }
+            };
+            mockService.Setup(s => s.GetAllAccountsAsync()).ReturnsAsync(accounts);
+            var controller = new AccountController(mockService.Object);
+
+            var result = await controller.GetAll();
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnedAccounts = Assert.IsType<List<Account>>(okResult.Value);
+            Assert.Equal(2, returnedAccounts.Count);
+        }
+
+        [Fact]
+        public async Task GetAll_ReturnsOkResult_WithEmptyList()
+        {
+            var mockService = new Mock<IAccountService>();
+            var accounts = new List<Account>();
+            mockService.Setup(s => s.GetAllAccountsAsync()).ReturnsAsync(accounts);
+            var controller = new AccountController(mockService.Object);
+
+            var result = await controller.GetAll();
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnedAccounts = Assert.IsType<List<Account>>(okResult.Value);
+            Assert.Empty(returnedAccounts);
+        }
+
         [Fact]
         public async Task Create_ValidData_ReturnsCreatedResult()
         {
@@ -27,7 +61,11 @@ namespace Banking.Tests.Controllers
                 Id = Guid.NewGuid(),
                 Name = dto.Name,
                 Surname = dto.Surname,
-                Email = dto.Email
+                Email = dto.Email,
+                Balance = 0,
+                DateCreated = DateTime.UtcNow,
+                DateModified = DateTime.UtcNow,
+                AccountHistories = new List<AccountHistory>()
             };
 
             mockService
@@ -51,7 +89,11 @@ namespace Banking.Tests.Controllers
                 Id = Guid.NewGuid(),
                 Name = "John",
                 Surname = "Doe",
-                Email = "john.doe@example.com"
+                Email = "john.doe@example.com",
+                Balance = 0,
+                DateCreated = DateTime.UtcNow,
+                DateModified = DateTime.UtcNow,
+                AccountHistories = new List<AccountHistory>()
             };
 
             mockService

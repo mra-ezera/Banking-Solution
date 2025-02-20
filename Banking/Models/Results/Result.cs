@@ -1,4 +1,4 @@
-namespace Banking.Models
+namespace Banking.Models.Results
 {
     public class Result<T>
     {

@@ -1,6 +1,6 @@
 ﻿using Banking.Models.Entities;
 
-namespace Banking.Models
+namespace Banking.Models.DTOs
 {
     public class AddAccountDto
     {

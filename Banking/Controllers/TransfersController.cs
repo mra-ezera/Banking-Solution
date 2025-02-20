@@ -1,11 +1,7 @@
-using Banking.Data;
-using Banking.Models;
-using Banking.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Swashbuckle.AspNetCore.Annotations;
 using Banking.Interfaces;
+using Banking.Models.Results;
 
 namespace Banking.Controllers
 {
@@ -28,7 +24,13 @@ namespace Banking.Controllers
             if (!result.IsSuccess)
                 return BadRequest(result.Error);
 
-            return Ok(new { FromAccount = result.Data.FromAccount, ToAccount = result.Data.ToAccount });
+            var transferResult = new TransferResult
+            {
+                FromAccount = result.Data.FromAccount,
+                ToAccount = result.Data.ToAccount
+            };
+
+            return Ok(transferResult);
         }
     }
 }

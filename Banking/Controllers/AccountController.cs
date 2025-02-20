@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using Banking.Interfaces;
-using Banking.Models;
+using Banking.Models.DTOs;
 
 namespace Banking.Controllers
 {

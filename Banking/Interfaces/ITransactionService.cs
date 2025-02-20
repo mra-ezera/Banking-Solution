@@ -1,5 +1,6 @@
 ﻿using Banking.Models.Entities;
-using Banking.Models;
+using Banking.Models.Results;
+using Banking.Models.DTOs;
 
 namespace Banking.Interfaces
 {

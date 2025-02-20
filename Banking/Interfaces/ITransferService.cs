@@ -1,5 +1,5 @@
-﻿using Banking.Models;
-using Banking.Models.Entities;
+﻿using Banking.Models.Entities;
+using Banking.Models.Results;
 
 namespace Banking.Interfaces
 {
