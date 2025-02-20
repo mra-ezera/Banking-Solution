@@ -1,4 +1,4 @@
-﻿using Banking.Models;
+﻿using Banking.Models.DTOs;
 using Banking.Models.Entities;
 using Banking.Services;
 using Banking.Tests.Helpers;

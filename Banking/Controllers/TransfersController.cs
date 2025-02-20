@@ -2,11 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using Banking.Interfaces;
 using Banking.Models.Results;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Banking.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class TransfersController : ControllerBase
     {
         private readonly ITransferService _transferService;

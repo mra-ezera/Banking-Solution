@@ -1,5 +1,5 @@
 ﻿using Banking.Interfaces;
-using Banking.Models;
+using Banking.Models.DTOs;
 using Banking.Models.Entities;
 using Banking.Services;
 using Banking.Tests.Helpers;
@@ -38,6 +38,9 @@ namespace Banking.Tests.Services
             var result = await service.AddBalanceAsync(account.Id, dto);
 
             Assert.True(result.IsSuccess);
+            Assert.Equal(150, result.Data.Balance);
+            Assert.True(result.IsSuccess);
+            Assert.NotNull(result.Data);
             Assert.Equal(150, result.Data.Balance);
         }
 

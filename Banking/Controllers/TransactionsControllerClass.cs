@@ -2,11 +2,13 @@
 using Swashbuckle.AspNetCore.Annotations;
 using Banking.Interfaces;
 using Banking.Models.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Banking.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class TransactionsController : ControllerBase
     {
         private readonly ITransactionService _transactionService;

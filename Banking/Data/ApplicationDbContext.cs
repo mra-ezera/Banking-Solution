@@ -12,6 +12,7 @@ namespace Banking.Data
 
         public DbSet<Account> Accounts { get; set; }
         public DbSet<AccountHistory> AccountHistories { get; set; }
+        public DbSet<LoginUser> LoginUsers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
