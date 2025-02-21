@@ -29,7 +29,7 @@ namespace Banking.Tests.Controllers
                 .Setup(s => s.AddBalanceAsync(It.IsAny<Guid>(), It.IsAny<UpdateBalanceDto>()))
                 .ReturnsAsync(Result<Account>.Success(account));
 
-            var result = await controller.AddToBalance(account.Id, updateBalanceDto);
+            var result = await controller.Deposit(account.Id, updateBalanceDto);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
             var returnedAccount = Assert.IsType<Account>(okResult.Value);
@@ -55,7 +55,7 @@ namespace Banking.Tests.Controllers
                 .Setup(s => s.RemoveBalanceAsync(It.IsAny<Guid>(), It.IsAny<UpdateBalanceDto>()))
                 .ReturnsAsync(Result<Account>.Success(account));
 
-            var result = await controller.RemoveFromBalance(account.Id, updateBalanceDto);
+            var result = await controller.Withdraw(account.Id, updateBalanceDto);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
             var returnedAccount = Assert.IsType<Account>(okResult.Value);

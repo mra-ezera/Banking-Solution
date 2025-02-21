@@ -18,12 +18,12 @@ namespace Banking.Controllers
             _transactionService = transactionService;
         }
 
-        [HttpPost("{id:guid}/add")]
-        [SwaggerOperation(Summary = "Adds an amount to the account balance.")]
+        [HttpPost("{id:guid}/deposit ")]
+        [SwaggerOperation(Summary = "Deposits an amount to the account balance.")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AddToBalance(Guid id, [FromBody] UpdateBalanceDto updateBalanceDto)
+        public async Task<IActionResult> Deposit(Guid id, [FromBody] UpdateBalanceDto updateBalanceDto)
         {
             var result = await _transactionService.AddBalanceAsync(id, updateBalanceDto);
             if (!result.IsSuccess)
@@ -32,12 +32,12 @@ namespace Banking.Controllers
             return Ok(result.Data);
         }
 
-        [HttpPost("{id:guid}/remove")]
-        [SwaggerOperation(Summary = "Removes an amount from the account balance.")]
+        [HttpPost("{id:guid}/withdraw")]
+        [SwaggerOperation(Summary = "Withdraws an amount from the account balance.")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> RemoveFromBalance(Guid id, [FromBody] UpdateBalanceDto updateBalanceDto)
+        public async Task<IActionResult> Withdraw(Guid id, [FromBody] UpdateBalanceDto updateBalanceDto)
         {
             var result = await _transactionService.RemoveBalanceAsync(id, updateBalanceDto);
             if (!result.IsSuccess)
