@@ -8,7 +8,7 @@ namespace Banking.Interfaces
     {
         Task<Account?> GetAccountByIdAsync(Guid id);
         Task UpdateAccountAsync(Account account);
-        Task<IEnumerable<Account>> GetAllAccountsAsync();
+        Task<PagedResultDto<Account>> GetAllAccountsAsync(PaginationParamsDto pagination);
         Task<Result<Account>> CreateAccountAsync(AddAccountDto addAccountDto);
     }
 }

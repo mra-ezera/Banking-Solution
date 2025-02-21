@@ -52,5 +52,21 @@ namespace Banking.Services
             _dbContext.Accounts.Update(account);
             await _dbContext.SaveChangesAsync();
         }
+
+        public async Task<PagedResultDto<Account>> GetAllAccountsAsync(PaginationParamsDto pagination)
+        {
+            var query = _dbContext.Accounts.AsQueryable();
+
+            var totalItems = await query.CountAsync();
+            var items = await query.Skip((pagination.PageNumber - 1) * pagination.PageSize)
+                                   .Take(pagination.PageSize)
+                                   .ToListAsync();
+
+            return new PagedResultDto<Account>
+            {
+                Items = items,
+                TotalCount = totalItems
+            };
+        }
     }
 }

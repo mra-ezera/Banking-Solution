@@ -1,5 +1,6 @@
 ﻿using Banking.Interfaces;
 using Banking.Models.DTOs;
+using Banking.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -19,13 +20,13 @@ namespace Banking.Controllers
         }
 
         [HttpGet]
-        [SwaggerOperation(Summary = "Gets all accounts.")]
+        [SwaggerOperation(Summary = "Gets all accounts with pagination.")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<PagedResultDto<Account>>> GetAll([FromQuery] PaginationParamsDto pagination)
         {
-            var accounts = await _accountService.GetAllAccountsAsync();
-            return Ok(accounts);
+            var pagedAccounts = await _accountService.GetAllAccountsAsync(pagination);
+            return Ok(pagedAccounts);
         }
 
         [HttpGet("{id:guid}")]
