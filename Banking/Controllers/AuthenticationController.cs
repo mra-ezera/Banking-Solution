@@ -1,5 +1,6 @@
 using Banking.Interfaces;
 using Banking.Models.DTOs;
+using Banking.Models.Results;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -30,7 +31,7 @@ namespace Banking.Controllers
             try
             {
                 var token = await _authenticationService.LoginAsync(loginDto);
-                return Ok(new { Token = token });
+                return Ok(new TokenResult { Token = token });
             }
             catch (UnauthorizedAccessException)
             {
@@ -42,8 +43,13 @@ namespace Banking.Controllers
         [SwaggerOperation(Summary = "Registers a new user.")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
+        public async Task<IActionResult> Register([FromBody] RegisterDto? registerDto)
         {
+            if (registerDto == null)
+            {
+                return BadRequest("Register data is required.");
+            }
+
             await _authenticationService.RegisterAsync(registerDto);
             return Ok();
         }
