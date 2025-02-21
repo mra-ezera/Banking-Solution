@@ -20,6 +20,9 @@ namespace Banking.Controllers
 
         [HttpPost("{fromId:guid}")]
         [SwaggerOperation(Summary = "Transfers an amount from one account to another.")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Transfer(Guid fromId, [FromBody] TransferBalanceDto transferDto)
         {
             var result = await _transferService.TransferAsync(fromId, transferDto);

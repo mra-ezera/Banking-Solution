@@ -20,6 +20,9 @@ namespace Banking.Controllers
 
         [HttpPost("{id:guid}/add")]
         [SwaggerOperation(Summary = "Adds an amount to the account balance.")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddToBalance(Guid id, [FromBody] UpdateBalanceDto updateBalanceDto)
         {
             var result = await _transactionService.AddBalanceAsync(id, updateBalanceDto);
@@ -31,6 +34,9 @@ namespace Banking.Controllers
 
         [HttpPost("{id:guid}/remove")]
         [SwaggerOperation(Summary = "Removes an amount from the account balance.")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RemoveFromBalance(Guid id, [FromBody] UpdateBalanceDto updateBalanceDto)
         {
             var result = await _transactionService.RemoveBalanceAsync(id, updateBalanceDto);

@@ -18,14 +18,30 @@ namespace Banking.Controllers
 
         [HttpPost("login")]
         [SwaggerOperation(Summary = "Logs in a user and returns a JWT token.")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
-            var token = await _authenticationService.LoginAsync(loginDto);
-            return Ok(new { Token = token });
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var token = await _authenticationService.LoginAsync(loginDto);
+                return Ok(new { Token = token });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
         }
 
         [HttpPost("register")]
         [SwaggerOperation(Summary = "Registers a new user.")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
             await _authenticationService.RegisterAsync(registerDto);
