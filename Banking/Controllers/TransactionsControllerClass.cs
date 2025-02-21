@@ -18,7 +18,7 @@ namespace Banking.Controllers
             _transactionService = transactionService;
         }
 
-        [HttpPost("{id:guid}/deposit ")]
+        [HttpPost("{id:guid}/deposit")]
         [SwaggerOperation(Summary = "Deposits an amount to the account balance.")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
