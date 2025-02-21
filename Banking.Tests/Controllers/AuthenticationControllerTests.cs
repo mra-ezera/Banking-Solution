@@ -5,9 +5,6 @@ using Banking.Models.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System;
-using System.Threading.Tasks;
-using Xunit;
 
 public class AuthenticationControllerTests
 {

@@ -1,9 +1,6 @@
 using Banking.Interfaces;
 using Banking.Models.DTOs;
 using Moq;
-using System;
-using System.Threading.Tasks;
-using Xunit;
 
 public class AuthenticationServiceTests
 {

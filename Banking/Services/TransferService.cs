@@ -1,8 +1,6 @@
 using Banking.Interfaces;
 using Banking.Models.Entities;
 using Banking.Models.Results;
-using System;
-using System.Threading.Tasks;
 
 namespace Banking.Services
 {

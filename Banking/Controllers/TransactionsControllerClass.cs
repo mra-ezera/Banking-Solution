@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
-using Banking.Interfaces;
+﻿using Banking.Interfaces;
 using Banking.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Banking.Controllers
 {

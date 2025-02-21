@@ -1,13 +1,10 @@
 using Banking.Controllers;
 using Banking.Interfaces;
+using Banking.Models.DTOs;
 using Banking.Models.Entities;
+using Banking.Models.Results;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Xunit;
-using System;
-using System.Threading.Tasks;
-using Banking.Models.Results;
-using Banking.Models.DTOs;
 
 namespace Banking.Tests.Controllers
 {

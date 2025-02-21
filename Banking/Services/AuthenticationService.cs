@@ -2,13 +2,11 @@ using Banking.Data;
 using Banking.Interfaces;
 using Banking.Models.DTOs;
 using Banking.Models.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using BCrypt.Net;
-using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Crypto.Generators;
 
 namespace Banking.Services
 {

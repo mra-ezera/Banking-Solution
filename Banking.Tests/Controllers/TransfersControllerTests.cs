@@ -4,7 +4,6 @@ using Banking.Models.Entities;
 using Banking.Models.Results;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Xunit;
 
 namespace Banking.Tests.Controllers
 {

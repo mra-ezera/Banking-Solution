@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Banking.Models.Entities;
+﻿using Banking.Models.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Banking.Data
 {

@@ -1,7 +1,7 @@
 ﻿using Banking.Interfaces;
+using Banking.Models.DTOs;
 using Banking.Models.Entities;
 using Banking.Models.Results;
-using Banking.Models.DTOs;
 
 namespace Banking.Services
 {
