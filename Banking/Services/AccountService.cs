@@ -29,7 +29,7 @@ namespace Banking.Services
                 Name = addAccountDto.Name,
                 Surname = addAccountDto.Surname,
                 Email = addAccountDto.Email,
-                Balance = 0, // Initial balance is zero
+                Balance = 0,
                 DateCreated = DateTime.Now,
                 DateModified = DateTime.Now,
                 AccountHistories = new List<AccountHistory>()
@@ -65,7 +65,12 @@ namespace Banking.Services
             return new PagedResultDto<Account>
             {
                 Items = items,
-                TotalCount = totalItems
+                PageNumber = pagination.PageNumber,
+                PageSize = pagination.PageSize,
+                TotalCount = totalItems,
+                TotalPages = (int)Math.Ceiling(totalItems / (double)pagination.PageSize),
+                HasNextPage = pagination.PageNumber < (int)Math.Ceiling(totalItems / (double)pagination.PageSize),
+                HasPreviousPage = pagination.PageNumber > 1
             };
         }
     }
