@@ -6,72 +6,76 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
-public class AuthenticationControllerTests
+namespace Banking.Tests.Controllers
 {
-    private readonly AuthenticationController _authenticationController;
-    private readonly Mock<IAuthenticationService> _authenticationServiceMock;
-
-    public AuthenticationControllerTests()
+    public class AuthenticationControllerTests
     {
-        _authenticationServiceMock = new Mock<IAuthenticationService>();
-        _authenticationController = new AuthenticationController(_authenticationServiceMock.Object);
-    }
+        private readonly AuthenticationController _authenticationController;
+        private readonly Mock<IAuthenticationService> _authenticationServiceMock;
 
-    [Fact]
-    public async Task Login_ValidCredentials_ReturnsOkResultWithToken()
-    {
-        var loginDto = new LoginDto { Username = "testuser", Password = "password" };
-        _authenticationServiceMock.Setup(service => service.LoginAsync(loginDto))
-            .ReturnsAsync("test_token");
+        public AuthenticationControllerTests()
+        {
+            _authenticationServiceMock = new Mock<IAuthenticationService>();
+            _authenticationController = new AuthenticationController(_authenticationServiceMock.Object);
+        }
 
-        var result = await _authenticationController.Login(loginDto) as OkObjectResult;
-        Console.WriteLine($"result.Value: {result?.Value}");
+        [Fact]
+        public async Task Login_ValidCredentials_ReturnsOkResultWithToken()
+        {
+            var loginDto = new LoginDto { Username = "testuser", Password = "password" };
+            _authenticationServiceMock.Setup(service => service.LoginAsync(loginDto))
+                .ReturnsAsync("test_token");
 
-        Assert.NotNull(result);
-        Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
-        Assert.NotNull(result.Value);
+            var result = await _authenticationController.Login(loginDto) as OkObjectResult;
+            Console.WriteLine($"result.Value: {result?.Value}");
 
-        var tokenResult = result.Value as TokenResult;
-        Assert.NotNull(tokenResult);
+            Assert.NotNull(result);
+            Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
+            Assert.NotNull(result.Value);
 
-        Console.WriteLine($"Token Result: {tokenResult.Token}");
+            var tokenResult = result.Value as TokenResult;
+            Assert.NotNull(tokenResult);
 
-        Assert.Equal("test_token", tokenResult.Token);
-    }
+            Console.WriteLine($"Token Result: {tokenResult.Token}");
 
-    [Fact]
-    public async Task Login_InvalidCredentials_ReturnsUnauthorizedResult()
-    {
-        var loginDto = new LoginDto { Username = "testuser", Password = "wrongpassword" };
-        _authenticationServiceMock.Setup(service => service.LoginAsync(loginDto))
-            .ThrowsAsync(new UnauthorizedAccessException());
+            Assert.Equal("test_token", tokenResult.Token);
+        }
 
-        var result = await _authenticationController.Login(loginDto) as UnauthorizedResult;
+        [Fact]
+        public async Task Login_InvalidCredentials_ReturnsUnauthorizedResult()
+        {
+            var loginDto = new LoginDto { Username = "testuser", Password = "wrongpassword" };
+            _authenticationServiceMock.Setup(service => service.LoginAsync(loginDto))
+                .ThrowsAsync(new UnauthorizedAccessException());
 
-        Assert.NotNull(result);
-        Assert.Equal(StatusCodes.Status401Unauthorized, result.StatusCode);
-    }
+            var result = await _authenticationController.Login(loginDto) as UnauthorizedResult;
 
-    [Fact]
-    public async Task Register_ValidData_ReturnsOkResult()
-    {
-        var registerDto = new RegisterDto { Username = "newuser", Password = "password" };
+            Assert.NotNull(result);
+            Assert.Equal(StatusCodes.Status401Unauthorized, result.StatusCode);
+        }
 
-        var result = await _authenticationController.Register(registerDto) as OkResult;
+        [Fact]
+        public async Task Register_ValidData_ReturnsOkResult()
+        {
+            var registerDto = new RegisterDto { Username = "newuser", Password = "password" };
 
-        Assert.NotNull(result);
-        Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
-    }
+            var result = await _authenticationController.Register(registerDto) as OkResult;
 
-    [Fact]
-    public async Task Register_NullData_ReturnsBadRequestResult()
-    {
-        _authenticationController.ModelState.AddModelError("Username", "Required");
+            Assert.NotNull(result);
+            Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
+        }
 
-        var result = await _authenticationController.Register(null) as BadRequestObjectResult;
+        [Fact]
+        public async Task Register_NullData_ReturnsBadRequestResult()
+        {
+            _authenticationController.ModelState.AddModelError("Username", "Required");
 
-        Assert.NotNull(result);
-        Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+            var result = await _authenticationController.Register(null) as BadRequestObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+        }
+
     }
 
 }

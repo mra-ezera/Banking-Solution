@@ -2,59 +2,62 @@ using Banking.Interfaces;
 using Banking.Models.DTOs;
 using Moq;
 
-public class AuthenticationServiceTests
+namespace Banking.Tests.Services
 {
-    private readonly Mock<IAuthenticationService> _authenticationServiceMock;
-
-    public AuthenticationServiceTests()
+    public class AuthenticationServiceTests
     {
-        _authenticationServiceMock = new Mock<IAuthenticationService>();
-    }
+        private readonly Mock<IAuthenticationService> _authenticationServiceMock;
 
-    [Fact]
-    public async Task LoginAsync_ValidCredentials_ReturnsToken()
-    {
-        var loginDto = new LoginDto { Username = "testuser", Password = "password" };
-        _authenticationServiceMock.Setup(service => service.LoginAsync(loginDto))
-            .ReturnsAsync("test_token");
+        public AuthenticationServiceTests()
+        {
+            _authenticationServiceMock = new Mock<IAuthenticationService>();
+        }
 
-        var result = await _authenticationServiceMock.Object.LoginAsync(loginDto);
+        [Fact]
+        public async Task LoginAsync_ValidCredentials_ReturnsToken()
+        {
+            var loginDto = new LoginDto { Username = "testuser", Password = "password" };
+            _authenticationServiceMock.Setup(service => service.LoginAsync(loginDto))
+                .ReturnsAsync("test_token");
 
-        Assert.NotNull(result);
-        Assert.Equal("test_token", result);
-    }
+            var result = await _authenticationServiceMock.Object.LoginAsync(loginDto);
 
-    [Fact]
-    public async Task LoginAsync_InvalidCredentials_ThrowsUnauthorizedAccessException()
-    {
-        var loginDto = new LoginDto { Username = "testuser", Password = "wrongpassword" };
-        _authenticationServiceMock.Setup(service => service.LoginAsync(loginDto))
-            .ThrowsAsync(new UnauthorizedAccessException());
+            Assert.NotNull(result);
+            Assert.Equal("test_token", result);
+        }
 
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _authenticationServiceMock.Object.LoginAsync(loginDto));
-    }
+        [Fact]
+        public async Task LoginAsync_InvalidCredentials_ThrowsUnauthorizedAccessException()
+        {
+            var loginDto = new LoginDto { Username = "testuser", Password = "wrongpassword" };
+            _authenticationServiceMock.Setup(service => service.LoginAsync(loginDto))
+                .ThrowsAsync(new UnauthorizedAccessException());
 
-    [Fact]
-    public async Task RegisterAsync_ValidData_CompletesSuccessfully()
-    {
-        var registerDto = new RegisterDto { Username = "newuser", Password = "password" };
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _authenticationServiceMock.Object.LoginAsync(loginDto));
+        }
 
-        _authenticationServiceMock.Setup(service => service.RegisterAsync(registerDto))
-            .Returns(Task.CompletedTask);
+        [Fact]
+        public async Task RegisterAsync_ValidData_CompletesSuccessfully()
+        {
+            var registerDto = new RegisterDto { Username = "newuser", Password = "password" };
 
-        await _authenticationServiceMock.Object.RegisterAsync(registerDto);
+            _authenticationServiceMock.Setup(service => service.RegisterAsync(registerDto))
+                .Returns(Task.CompletedTask);
 
-        _authenticationServiceMock.Verify(service => service.RegisterAsync(registerDto), Times.Once);
-    }
+            await _authenticationServiceMock.Object.RegisterAsync(registerDto);
 
-    [Fact]
-    public async Task RegisterAsync_NullData_ThrowsArgumentNullException()
-    {
-        RegisterDto registerDto = null;
+            _authenticationServiceMock.Verify(service => service.RegisterAsync(registerDto), Times.Once);
+        }
 
-        _authenticationServiceMock.Setup(service => service.RegisterAsync(registerDto))
-            .ThrowsAsync(new ArgumentNullException());
+        [Fact]
+        public async Task RegisterAsync_NullData_ThrowsArgumentNullException()
+        {
+            RegisterDto registerDto = null;
 
-        await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticationServiceMock.Object.RegisterAsync(registerDto));
+            _authenticationServiceMock.Setup(service => service.RegisterAsync(registerDto))
+                .ThrowsAsync(new ArgumentNullException());
+
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _authenticationServiceMock.Object.RegisterAsync(registerDto));
+        }
     }
 }

@@ -1,110 +1,77 @@
-﻿using Banking.Controllers;
+﻿using Banking.Data;
 using Banking.Interfaces;
 using Banking.Models.DTOs;
 using Banking.Models.Entities;
 using Banking.Models.Results;
-using Microsoft.AspNetCore.Mvc;
-using Moq;
+using Microsoft.EntityFrameworkCore;
 
-namespace Banking.Tests.Controllers
+namespace Banking.Services
 {
-    public class AccountControllerTests
+    public class AccountService : IAccountService
     {
-        [Fact]
-        public async Task GetAll_ReturnsOkResult_WithListOfAccounts()
+        private readonly ApplicationDbContext _dbContext;
+
+        public AccountService(ApplicationDbContext dbContext)
         {
-            var mockService = new Mock<IAccountService>();
-            var accounts = new List<Account>
-            {
-                new Account { Id = Guid.NewGuid(), Name = "John", Surname = "Doe", Email = "john.doe@example.com" },
-                new Account { Id = Guid.NewGuid(), Name = "Jane", Surname = "Doe", Email = "jane.doe@example.com" }
-            };
-            mockService.Setup(s => s.GetAllAccountsAsync()).ReturnsAsync(accounts);
-            var controller = new AccountController(mockService.Object);
-
-            var result = await controller.GetAll();
-
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedAccounts = Assert.IsType<List<Account>>(okResult.Value);
-            Assert.Equal(2, returnedAccounts.Count);
+            _dbContext = dbContext;
         }
 
-        [Fact]
-        public async Task GetAll_ReturnsOkResult_WithEmptyList()
+        public async Task<Account?> GetAccountByIdAsync(Guid id)
+            => await _dbContext.Accounts.FindAsync(id);
+
+        public async Task<IEnumerable<Account>> GetAllAccountsAsync()
+            => await _dbContext.Accounts.ToListAsync();
+
+        public async Task<Result<Account>> CreateAccountAsync(AddAccountDto addAccountDto)
         {
-            var mockService = new Mock<IAccountService>();
-            var accounts = new List<Account>();
-            mockService.Setup(s => s.GetAllAccountsAsync()).ReturnsAsync(accounts);
-            var controller = new AccountController(mockService.Object);
-
-            var result = await controller.GetAll();
-
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedAccounts = Assert.IsType<List<Account>>(okResult.Value);
-            Assert.Empty(returnedAccounts);
-        }
-
-        [Fact]
-        public async Task Create_ValidData_ReturnsCreatedResult()
-        {
-            var mockService = new Mock<IAccountService>();
-            var controller = new AccountController(mockService.Object);
-            var dto = new AddAccountDto
-            {
-                Name = "John",
-                Surname = "Doe",
-                Email = "john.doe@example.com"
-            };
-
             var account = new Account
             {
-                Id = Guid.NewGuid(),
-                Name = dto.Name,
-                Surname = dto.Surname,
-                Email = dto.Email,
-                Balance = 0,
-                DateCreated = DateTime.UtcNow,
-                DateModified = DateTime.UtcNow,
+                Name = addAccountDto.Name,
+                Surname = addAccountDto.Surname,
+                Email = addAccountDto.Email,
+                Balance = addAccountDto.Balance,
+                DateCreated = DateTime.Now,
+                DateModified = DateTime.Now,
                 AccountHistories = new List<AccountHistory>()
             };
 
-            mockService
-                .Setup(s => s.CreateAccountAsync(It.IsAny<AddAccountDto>()))
-                .ReturnsAsync(Result<Account>.Success(account));
-
-            var result = await controller.Create(dto);
-
-            var createdAtResult = Assert.IsType<CreatedAtActionResult>(result);
-            var returnedAccount = Assert.IsType<Account>(createdAtResult.Value);
-            Assert.Equal(account.Id, returnedAccount.Id);
+            try
+            {
+                _dbContext.Accounts.Add(account);
+                await _dbContext.SaveChangesAsync();
+                return Result<Account>.Success(account);
+            }
+            catch (Exception ex)
+            {
+                return Result<Account>.Failure($"Failed to create account: {ex.Message}");
+            }
         }
 
-        [Fact]
-        public async Task GetById_ExistingAccount_ReturnsOkResult()
+        public async Task UpdateAccountAsync(Account account)
         {
-            var mockService = new Mock<IAccountService>();
-            var controller = new AccountController(mockService.Object);
-            var account = new Account
+            _dbContext.Accounts.Update(account);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<PagedResultDto<Account>> GetAllAccountsAsync(PaginationParamsDto pagination)
+        {
+            var query = _dbContext.Accounts.AsQueryable();
+
+            var totalItems = await query.CountAsync();
+            var items = await query.Skip((pagination.PageNumber - 1) * pagination.PageSize)
+                                   .Take(pagination.PageSize)
+                                   .ToListAsync();
+
+            return new PagedResultDto<Account>
             {
-                Id = Guid.NewGuid(),
-                Name = "John",
-                Surname = "Doe",
-                Email = "john.doe@example.com",
-                Balance = 0,
-                DateCreated = DateTime.UtcNow,
-                DateModified = DateTime.UtcNow,
-                AccountHistories = new List<AccountHistory>()
+                Items = items,
+                PageNumber = pagination.PageNumber,
+                PageSize = pagination.PageSize,
+                TotalCount = totalItems,
+                TotalPages = (int)Math.Ceiling(totalItems / (double)pagination.PageSize),
+                HasNextPage = pagination.PageNumber < (int)Math.Ceiling(totalItems / (double)pagination.PageSize),
+                HasPreviousPage = pagination.PageNumber > 1
             };
-
-            mockService
-                .Setup(s => s.GetAccountByIdAsync(account.Id))
-                .ReturnsAsync(account);
-
-            var result = await controller.GetById(account.Id);
-
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedAccount = Assert.IsType<Account>(okResult.Value);
-            Assert.Equal(account.Id, returnedAccount.Id);
         }
     }
 }
