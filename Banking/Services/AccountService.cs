@@ -29,7 +29,7 @@ namespace Banking.Services
                 Name = addAccountDto.Name,
                 Surname = addAccountDto.Surname,
                 Email = addAccountDto.Email,
-                Balance = 0,
+                Balance = addAccountDto.Balance,
                 DateCreated = DateTime.Now,
                 DateModified = DateTime.Now,
                 AccountHistories = new List<AccountHistory>()
