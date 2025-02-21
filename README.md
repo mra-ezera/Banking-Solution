@@ -10,13 +10,13 @@ Ensure you have Docker installed and running on your machine.
 **Clone the Repository:**
 
 ```
-git clone https://github.com/mra-ezera/Banking.git
+git clone https://github.com/mra-ezera/Banking-Solution.git
 ```
 
 **Enter the project folder:**
 
 ```
-cd Banking/Banking
+cd Banking-Solution/Banking
 ```
 
 **Create MySQL container and run database migrations:**
