@@ -5,7 +5,6 @@ This API provides endpoints to manage bank accounts. The API is secured and requ
 
 ## Setup Instructions
 
-The project targets .NET 8.\
 Ensure you have Docker installed and running on your machine.
 
 **Clone the Repository:**
