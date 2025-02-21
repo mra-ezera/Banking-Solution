@@ -5,8 +5,8 @@ ENV MYSQL_ALLOW_EMPTY_PASSWORD=yes
 ENV MYSQL_DATABASE=banking
 
 # Copy the SQL file and init script
-COPY init.sql /docker-entrypoint-initdb.d/
-COPY init-script.sh /docker-entrypoint-initdb.d/
+COPY Data/init.sql /docker-entrypoint-initdb.d/
+COPY ShellScripts/init-script.sh /docker-entrypoint-initdb.d/
 
 # Make scripts executable
 RUN chmod 644 /docker-entrypoint-initdb.d/init.sql
