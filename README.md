@@ -16,7 +16,7 @@ git clone https://github.com/mra-ezera/Banking.git
 **Enter the project folder:**
 
 ```
-cd Banking
+cd Banking/Banking
 ```
 
 **Create MySQL container and run database migrations:**
