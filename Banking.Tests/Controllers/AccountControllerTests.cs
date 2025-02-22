@@ -160,7 +160,45 @@ namespace Banking.Tests.Controllers
             var errorResponse = Assert.IsType<ErrorResponse>(objectResult.Value);
             Assert.Equal("An error occurred while processing your request", errorResponse.Error);
         }
+        [Fact]
+        public async Task GetAccountById_ReturnsAccountWithHistory()
+        {
+            var mockService = new Mock<IAccountService>();
+            var controller = new AccountController(mockService.Object);
+            var accountId = Guid.NewGuid();
 
+            var account = new Account
+            {
+                Id = accountId,
+                Balance = 200,
+                Name = "John",
+                Surname = "Doe",
+                Email = "john.doe@example.com",
+                AccountHistories = new List<AccountHistory>()
+            };
+
+            account.AccountHistories.Add(new AccountHistory
+            {
+                Id = 1,
+                AccountId = accountId,
+                TransactionDate = DateTime.Now,
+                Amount = 100,
+                Description = "Initial deposit",
+                Account = account
+            });
+
+            mockService
+                .Setup(s => s.GetAccountByIdAsync(accountId))
+                .ReturnsAsync(account);
+
+            var result = await controller.GetById(accountId);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnedAccount = Assert.IsType<Account>(okResult.Value);
+            Assert.Equal(account.Id, returnedAccount.Id);
+            Assert.Single(returnedAccount.AccountHistories);
+            Assert.Equal(100, returnedAccount.AccountHistories.First().Amount);
+        }
     }
 }
 

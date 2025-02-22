@@ -17,7 +17,11 @@ namespace Banking.Services
         }
 
         public async Task<Account?> GetAccountByIdAsync(Guid id)
-            => await _dbContext.Accounts.FindAsync(id);
+        {
+            return await _dbContext.Accounts
+                .Include(a => a.AccountHistories)
+                .FirstOrDefaultAsync(a => a.Id == id);
+        }
 
         public async Task<IEnumerable<Account>> GetAllAccountsAsync()
             => await _dbContext.Accounts.ToListAsync();
