@@ -35,7 +35,11 @@ namespace Banking.Controllers
             }
             catch (UnauthorizedAccessException)
             {
-                return Unauthorized();
+                return Unauthorized(new ErrorResponse { Error = "Invalid credentials" });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new ErrorResponse { Error = "An error occurred while processing your request" });
             }
         }
 
@@ -47,11 +51,18 @@ namespace Banking.Controllers
         {
             if (registerDto == null)
             {
-                return BadRequest("Register data is required.");
+                return BadRequest(new ErrorResponse { Error = "Register data is required" });
             }
 
-            await _authenticationService.RegisterAsync(registerDto);
-            return Ok();
+            try
+            {
+                await _authenticationService.RegisterAsync(registerDto);
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new ErrorResponse { Error = "An error occurred while processing your request" });
+            }
         }
     }
 }

@@ -25,17 +25,25 @@ namespace Banking.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Transfer(Guid fromId, [FromBody] TransferBalanceDto transferDto)
         {
-            var result = await _transferService.TransferAsync(fromId, transferDto);
-            if (!result.IsSuccess)
-                return BadRequest(result.Error);
-
-            var transferResult = new TransferResult
+            try
             {
-                FromAccount = result.Data.FromAccount,
-                ToAccount = result.Data.ToAccount
-            };
+                var result = await _transferService.TransferAsync(fromId, transferDto);
+                if (!result.IsSuccess)
+                    return BadRequest(new ErrorResponse { Error = result.Error ?? "Unknown error" });
 
-            return Ok(transferResult);
+                var transferResult = new TransferResult
+                {
+                    FromAccount = result.Data.FromAccount,
+                    ToAccount = result.Data.ToAccount
+                };
+
+                return Ok(transferResult);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new ErrorResponse { Error = "An error occurred while processing your request" });
+            }
         }
     }
 }
+

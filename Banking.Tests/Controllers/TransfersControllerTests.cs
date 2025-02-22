@@ -97,7 +97,36 @@ namespace Banking.Tests.Controllers
 
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
 
-            Assert.Equal("Insufficient funds", badRequestResult.Value);
+            var errorResponse = Assert.IsType<ErrorResponse>(badRequestResult.Value);
+            Assert.Equal("Insufficient funds", errorResponse.Error);
+        }
+
+        [Fact]
+        public async Task Transfer_ReturnsInternalServerError_OnException()
+        {
+            var transferServiceMock = new Mock<ITransferService>();
+            var fromAccount = new Account
+            {
+                Id = Guid.NewGuid(),
+                Balance = 100,
+                Name = "John",
+                Surname = "Doe",
+                Email = "john.doe@example.com"
+            };
+            var transferDto = new TransferBalanceDto { ToAccountId = Guid.NewGuid(), Amount = 50, Description = "Test transfer" };
+
+            transferServiceMock.Setup(service => service.TransferAsync(fromAccount.Id, transferDto))
+                .ThrowsAsync(new Exception());
+
+            var controller = new TransfersController(transferServiceMock.Object);
+
+            var result = await controller.Transfer(fromAccount.Id, transferDto);
+
+            var objectResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(500, objectResult.StatusCode);
+
+            var errorResponse = Assert.IsType<ErrorResponse>(objectResult.Value);
+            Assert.Equal("An error occurred while processing your request", errorResponse.Error);
         }
     }
 }

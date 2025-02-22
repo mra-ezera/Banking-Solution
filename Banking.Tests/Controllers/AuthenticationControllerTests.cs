@@ -27,7 +27,6 @@ namespace Banking.Tests.Controllers
                 .ReturnsAsync("test_token");
 
             var result = await _authenticationController.Login(loginDto) as OkObjectResult;
-            Console.WriteLine($"result.Value: {result?.Value}");
 
             Assert.NotNull(result);
             Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
@@ -35,9 +34,6 @@ namespace Banking.Tests.Controllers
 
             var tokenResult = result.Value as TokenResult;
             Assert.NotNull(tokenResult);
-
-            Console.WriteLine($"Token Result: {tokenResult.Token}");
-
             Assert.Equal("test_token", tokenResult.Token);
         }
 
@@ -48,10 +44,13 @@ namespace Banking.Tests.Controllers
             _authenticationServiceMock.Setup(service => service.LoginAsync(loginDto))
                 .ThrowsAsync(new UnauthorizedAccessException());
 
-            var result = await _authenticationController.Login(loginDto) as UnauthorizedResult;
+            var result = await _authenticationController.Login(loginDto) as ObjectResult;
 
             Assert.NotNull(result);
             Assert.Equal(StatusCodes.Status401Unauthorized, result.StatusCode);
+
+            var errorResponse = Assert.IsType<ErrorResponse>(result.Value);
+            Assert.Equal("Invalid credentials", errorResponse.Error);
         }
 
         [Fact]
@@ -68,14 +67,29 @@ namespace Banking.Tests.Controllers
         [Fact]
         public async Task Register_NullData_ReturnsBadRequestResult()
         {
-            _authenticationController.ModelState.AddModelError("Username", "Required");
-
             var result = await _authenticationController.Register(null) as BadRequestObjectResult;
 
             Assert.NotNull(result);
             Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+
+            var errorResponse = Assert.IsType<ErrorResponse>(result.Value);
+            Assert.Equal("Register data is required", errorResponse.Error);
         }
 
-    }
+        [Fact]
+        public async Task Register_ThrowsException_ReturnsInternalServerError()
+        {
+            var registerDto = new RegisterDto { Username = "newuser", Password = "password" };
+            _authenticationServiceMock.Setup(service => service.RegisterAsync(registerDto))
+                .ThrowsAsync(new Exception());
 
+            var result = await _authenticationController.Register(registerDto) as ObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal(StatusCodes.Status500InternalServerError, result.StatusCode);
+
+            var errorResponse = Assert.IsType<ErrorResponse>(result.Value);
+            Assert.Equal("An error occurred while processing your request", errorResponse.Error);
+        }
+    }
 }
