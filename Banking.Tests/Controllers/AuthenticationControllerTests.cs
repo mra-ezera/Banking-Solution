@@ -26,16 +26,14 @@ namespace Banking.Tests.Controllers
             _authenticationServiceMock.Setup(service => service.LoginAsync(loginDto))
                 .ReturnsAsync("test_token");
 
-            var result = await _authenticationController.Login(loginDto) as OkObjectResult;
+            var result = await _authenticationController.Login(loginDto);
 
-            Assert.NotNull(result);
-            Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
-            Assert.NotNull(result.Value);
-
-            var tokenResult = result.Value as TokenResult;
-            Assert.NotNull(tokenResult);
-            Assert.Equal("test_token", tokenResult.Token);
+            var contentResult = Assert.IsType<ContentResult>(result);
+            Assert.Equal(StatusCodes.Status200OK, contentResult.StatusCode);
+            Assert.NotNull(contentResult.Content);
+            Assert.Equal("test_token", contentResult.Content);
         }
+
 
         [Fact]
         public async Task Login_InvalidCredentials_ReturnsUnauthorizedResult()

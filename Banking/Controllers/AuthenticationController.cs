@@ -31,7 +31,13 @@ namespace Banking.Controllers
             try
             {
                 var token = await _authenticationService.LoginAsync(loginDto);
-                return Ok(new TokenResult { Token = token });
+                return new ContentResult
+                {
+                    Content = token,
+                    ContentType = "text/plain",
+                    StatusCode = StatusCodes.Status200OK
+                };
+
             }
             catch (UnauthorizedAccessException)
             {
