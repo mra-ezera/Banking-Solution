@@ -23,8 +23,14 @@ namespace Banking.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Transfer(Guid fromId, [FromBody] TransferBalanceDto transferDto)
         {
+            if (transferDto.Amount <= 0)
+            {
+                return BadRequest(new ErrorResponse { Error = "Transfer amount must be greater than zero." });
+            }
+
             try
             {
                 var result = await _transferService.TransferAsync(fromId, transferDto);

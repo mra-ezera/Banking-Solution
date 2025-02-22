@@ -101,5 +101,32 @@ namespace Banking.Tests.Controllers
             var errorResponse = Assert.IsType<ErrorResponse>(objectResult.Value);
             Assert.Equal("An error occurred while processing your request", errorResponse.Error);
         }
+        [Fact]
+        public async Task Deposit_NegativeAmount_ReturnsBadRequest()
+        {
+            var transactionServiceMock = new Mock<ITransactionService>();
+            var controller = new TransactionsController(transactionServiceMock.Object);
+            var updateBalanceDto = new UpdateBalanceDto { Amount = -100 };
+
+            var result = await controller.Deposit(Guid.NewGuid(), updateBalanceDto);
+
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            var errorResponse = Assert.IsType<ErrorResponse>(badRequestResult.Value);
+            Assert.Equal("Deposit amount must be greater than zero.", errorResponse.Error);
+        }
+
+        [Fact]
+        public async Task Withdraw_NegativeAmount_ReturnsBadRequest()
+        {
+            var transactionServiceMock = new Mock<ITransactionService>();
+            var controller = new TransactionsController(transactionServiceMock.Object);
+            var updateBalanceDto = new UpdateBalanceDto { Amount = -100 };
+
+            var result = await controller.Withdraw(Guid.NewGuid(), updateBalanceDto);
+
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            var errorResponse = Assert.IsType<ErrorResponse>(badRequestResult.Value);
+            Assert.Equal("Withdrawal amount must be greater than zero.", errorResponse.Error);
+        }
     }
 }

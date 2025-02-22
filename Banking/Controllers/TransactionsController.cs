@@ -26,6 +26,11 @@ namespace Banking.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Deposit(Guid id, [FromBody] UpdateBalanceDto updateBalanceDto)
         {
+            if (updateBalanceDto.Amount <= 0)
+            {
+                return BadRequest(new ErrorResponse { Error = "Deposit amount must be greater than zero." });
+            }
+
             try
             {
                 var result = await _transactionService.AddBalanceAsync(id, updateBalanceDto);
@@ -47,6 +52,11 @@ namespace Banking.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Withdraw(Guid id, [FromBody] UpdateBalanceDto updateBalanceDto)
         {
+            if (updateBalanceDto.Amount <= 0)
+            {
+                return BadRequest(new ErrorResponse { Error = "Withdrawal amount must be greater than zero." });
+            }
+
             try
             {
                 var result = await _transactionService.RemoveBalanceAsync(id, updateBalanceDto);

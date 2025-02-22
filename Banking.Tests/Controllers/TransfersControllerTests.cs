@@ -128,5 +128,18 @@ namespace Banking.Tests.Controllers
             var errorResponse = Assert.IsType<ErrorResponse>(objectResult.Value);
             Assert.Equal("An error occurred while processing your request", errorResponse.Error);
         }
+        [Fact]
+        public async Task Transfer_NegativeAmount_ReturnsBadRequest()
+        {
+            var transferServiceMock = new Mock<ITransferService>();
+            var controller = new TransfersController(transferServiceMock.Object);
+            var transferDto = new TransferBalanceDto { ToAccountId = Guid.NewGuid(), Amount = -100, Description = "Test transfer" };
+
+            var result = await controller.Transfer(Guid.NewGuid(), transferDto);
+
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            var errorResponse = Assert.IsType<ErrorResponse>(badRequestResult.Value);
+            Assert.Equal("Transfer amount must be greater than zero.", errorResponse.Error);
+        }
     }
 }
