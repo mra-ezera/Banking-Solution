@@ -21,7 +21,7 @@ cd Banking-Solution/Banking
 
 **Create MySQL container:**
 
-The database initialization process ensures that migrations and data filling are executed only if the database is empty. 
+When the application runs for the first time and the database is empty, the initialization process automatically creates the necessary database tables and populates them with test data from Banking-Solution\Banking\Data\init.sql
 
 ```
 docker compose up -d --build
