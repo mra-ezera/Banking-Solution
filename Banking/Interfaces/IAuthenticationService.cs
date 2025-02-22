@@ -6,5 +6,6 @@ namespace Banking.Interfaces
     {
         Task<string> LoginAsync(LoginDto loginDto);
         Task RegisterAsync(RegisterDto registerDto);
+        Task<bool> UsernameExistsAsync(string username);
     }
 }

@@ -60,6 +60,11 @@ namespace Banking.Controllers
                 return BadRequest(new ErrorResponse { Error = "Register data is required" });
             }
 
+            if (await _authenticationService.UsernameExistsAsync(registerDto.Username))
+            {
+                return BadRequest(new ErrorResponse { Error = "Username already exists" });
+            }
+
             try
             {
                 await _authenticationService.RegisterAsync(registerDto);

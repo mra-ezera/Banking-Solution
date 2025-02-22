@@ -80,5 +80,10 @@ namespace Banking.Services
             _dbContext.LoginUsers.Add(user);
             await _dbContext.SaveChangesAsync();
         }
+
+        public async Task<bool> UsernameExistsAsync(string username)
+        {
+            return await _dbContext.LoginUsers.AnyAsync(u => u.Username == username);
+        }
     }
 }

@@ -89,5 +89,21 @@ namespace Banking.Tests.Controllers
             var errorResponse = Assert.IsType<ErrorResponse>(result.Value);
             Assert.Equal("An error occurred while processing your request", errorResponse.Error);
         }
+
+        [Fact]
+        public async Task Register_DuplicateUsername_ReturnsBadRequestResult()
+        {
+            var registerDto = new RegisterDto { Username = "existinguser", Password = "password" };
+            _authenticationServiceMock.Setup(service => service.UsernameExistsAsync(registerDto.Username))
+                .ReturnsAsync(true);
+
+            var result = await _authenticationController.Register(registerDto) as BadRequestObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+
+            var errorResponse = Assert.IsType<ErrorResponse>(result.Value);
+            Assert.Equal("Username already exists", errorResponse.Error);
+        }
     }
 }
