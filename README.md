@@ -19,7 +19,9 @@ git clone https://github.com/mra-ezera/Banking-Solution.git
 cd Banking-Solution/Banking
 ```
 
-**Create MySQL container and run database migrations:**
+**Create MySQL container:**
+
+The database initialization process ensures that migrations and data filling are executed only if the database is empty. 
 
 ```
 docker compose up -d --build
